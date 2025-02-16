@@ -7,12 +7,12 @@ export interface IFilmCategory {
 interface IActor {
   [actor: string]: string;
 }
-interface ICategory {
+export interface ICategory {
   cate_id: number;
   id: string;
   name: string;
 }
-interface IEpisodes {
+export interface IEpisodes {
   ep_no: number;
   id: string;
   movie_id: string;
@@ -21,6 +21,7 @@ interface IEpisodes {
   video_url: string;
 }
 export interface IMovies {
+  id: string;
   actor: string;
   actor_images: IActor[];
   author: string | null;
@@ -33,4 +34,5 @@ export interface IMovies {
   video_episode: number;
   des: string;
   title: string;
+  createdDate: string;
 }

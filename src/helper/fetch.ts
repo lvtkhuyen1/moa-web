@@ -1,3 +1,4 @@
+"use server";
 export const fetchData = async <T>(
   url: string,
   method: string = "GET",
@@ -17,7 +18,7 @@ export const fetchData = async <T>(
       method: method,
       headers: {
         "Content-Type": "application/json",
-        "x-agent-key": process.env.NEXT_PUBLIC_X_AGENT_KEY || "",
+        "x-agent-key": process.env.NEXT_PUBLIC_API_TOKEN || "",
         ...headers,
       },
       body:

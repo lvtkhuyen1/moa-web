@@ -19,3 +19,76 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.swiper-button-prev,
+.swiper-button-next {
+  background-color: rgba(71, 71, 71, 0.6);
+  color: white !important;
+  border-radius: 100%;
+}
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 30px !important;
+}
+
+@media (max-width: 768px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1280px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 45px !important;
+    height: 45px !important;
+  }
+  .swiper-button-prev::after,
+  .swiper-button-next::after {
+    font-size: 15px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 60px !important;
+    height: 60px !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 90px !important;
+    height: 90px !important;
+  }
+}
+
+.pagination-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: #313131;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-btn:hover {
+  background-color: #313131;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background-color: #facc15;
+  color: black;
+}
