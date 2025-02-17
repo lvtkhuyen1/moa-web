@@ -49,3 +49,12 @@ export const getMovieDetail = async (id: string) => {
     throw error;
   }
 };
+
+export const getCategoryMovies = async () => {
+  try {
+    const categories = await fetchData("/categories");
+    return categories.data;
+  } catch (error) {
+    throw error;
+  }
+};

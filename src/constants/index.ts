@@ -1,2 +1,2 @@
 export const limitMovies = 24;
-export const limitRelatedMovies = 8;
+export const limitInformationMovies = 8;

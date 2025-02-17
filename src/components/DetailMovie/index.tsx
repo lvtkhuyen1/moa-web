@@ -1,13 +1,13 @@
 "use client";
 
 import { getMovieDetail } from "@/services/movies";
-import { IEpisodes, IMovies } from "@/types";
+import { EpisodeType, MovieType } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import InformationDetailFilm from "../InformationFilm";
+import InformationMovie from "../MovieInformation";
 import MoviePlayer from "../MoviePlayer";
-import RelatedFilm from "../RelatedFilm";
 import ListMovies from "../ListMovies";
+import MovieContent from "../MovieContent";
 const ButtonSelectFilm = ({
   number_ep,
   isActive,
@@ -16,14 +16,14 @@ const ButtonSelectFilm = ({
 }: {
   number_ep: string;
   isActive?: boolean;
-  handleSelectEpisode?: (episode: IEpisodes) => void;
-  episode: IEpisodes;
+  handleSelectEpisode?: (episode: EpisodeType) => void;
+  episode: EpisodeType;
 }) => {
   return (
     <button
       onClick={() => handleSelectEpisode && handleSelectEpisode(episode)}
-      className={`rounded text-white px-6 py-2 ${
-        isActive ? "bg-[#00C8FA]" : "bg-[#202020]"
+      className={`text-xs md:text-base rounded px-1 md:px-6 py-1 md:py-2 ${
+        isActive ? "bg-[#FFBB00] text-black" : "bg-[#202020] text-white"
       }`}
     >
       {number_ep}
@@ -32,10 +32,10 @@ const ButtonSelectFilm = ({
 };
 export default function DetailMovie({ movie }: { movie: string }) {
   const number_ep = useSearchParams().get("number_ep");
-  const [detailMovie, setDetailMovie] = useState<IMovies | null>(null);
+  const [detailMovie, setDetailMovie] = useState<MovieType | null>(null);
   const [video_url, setVideoUrl] = useState<string | null>(null);
   const router = useRouter();
-  const handleSelectEpisode = (episode: IEpisodes) => {
+  const handleSelectEpisode = (episode: EpisodeType) => {
     router.push(`${window.location.pathname}?number_ep=${episode.ep_no}`);
     setVideoUrl(episode.video_url);
   };
@@ -59,7 +59,7 @@ export default function DetailMovie({ movie }: { movie: string }) {
     if (!detailMovie) return;
     const video =
       detailMovie.episodes.find(
-        (ep: IEpisodes) => ep.ep_no === Number(number_ep)
+        (ep: EpisodeType) => ep.ep_no === Number(number_ep)
       ) ?? detailMovie.episodes[detailMovie.episodes.length - 1];
     setVideoUrl(video.video_url);
   }, [number_ep, detailMovie]);
@@ -70,9 +70,10 @@ export default function DetailMovie({ movie }: { movie: string }) {
           <div className="mb-5">
             <MoviePlayer movieUrl={video_url!} />
           </div>
-          <div className="my-1 bg-[#313131] rounded px-4 py-6 flex gap-[10px] flex-wrap items-center">
-            <span>서버 : </span>
+          <div className="my-0 md:my-1 bg-[#4A4A4A] rounded px-1 md:px-4 py-6 flex gap-1 md:gap-3 flex-wrap items-center">
+            <span className="text-xs md:text-base">서버 : </span>
             {detailMovie?.episodes
+              .sort((a, b) => a.ep_no - b.ep_no)
               .map((ep) => (
                 <ButtonSelectFilm
                   episode={ep}
@@ -89,10 +90,10 @@ export default function DetailMovie({ movie }: { movie: string }) {
               .reverse()}
           </div>
           <div className="my-1">
-            <InformationDetailFilm profile={detailMovie} />
+            <InformationMovie profile={detailMovie} />
           </div>
           <div className="my-4">
-            <RelatedFilm />
+            <MovieContent />
           </div>
         </ListMovies>
       ) : null}

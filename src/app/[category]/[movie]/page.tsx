@@ -1,4 +1,4 @@
-import DetailMovie from "@/components/DetailFilm";
+import DetailMovie from "@/components/DetailMovie";
 import HomePage from "@/components/HomePage";
 
 export default async function Movie({
@@ -8,7 +8,7 @@ export default async function Movie({
 }) {
   const movie = (await params).movie;
   return (
-    <HomePage className="pt-[80px]">
+    <HomePage>
       <DetailMovie movie={movie} />
     </HomePage>
   );

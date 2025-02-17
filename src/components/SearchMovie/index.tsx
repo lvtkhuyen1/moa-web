@@ -2,7 +2,7 @@
 
 import { limitMovies } from "@/constants";
 import { getMovieCategories } from "@/services/movies";
-import { IMovies } from "@/types";
+import { MovieType } from "@/types";
 import { useEffect, useState } from "react";
 import ListMovies from "../ListMovies";
 import CategoryItem from "../CategoryItem";
@@ -16,7 +16,7 @@ export default function SearchMovie({ search }: { search: string }) {
     limit: limitMovies,
   });
   const [listMovie, setListMovie] = useState<{
-    movies: IMovies[];
+    movies: MovieType[];
     total: number;
   }>({
     movies: [],

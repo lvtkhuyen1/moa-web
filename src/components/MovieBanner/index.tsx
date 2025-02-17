@@ -1,12 +1,12 @@
 "use client";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
 import Image, { StaticImageData } from "next/image";
 import squidgame from "@/assets/movies/squid-game.png";
 import deadpool from "@/assets/movies/deadpool.png";
 import irishman from "@/assets/movies/the-irish-man.png";
+import SwiperComponent from "../Swiper";
 
 interface ImageMovie {
   id: number;
@@ -39,26 +39,21 @@ export default function MovieBanner() {
   return (
     <>
       <div className="hidden md:block">
-        <Swiper
-          slidesPerView={3}
-          spaceBetween={30}
-          modules={[Navigation]}
-          navigation={true}
-          loop
-        >
-          {movies.map((movie) => (
-            <SwiperSlide key={movie.id}>
-              <div className="relative">
+        <SwiperComponent gap={"16px"} slidesPerView={3}>
+          {movies.map((movie) => {
+            return (
+              <SwiperSlide key={movie.id}>
                 <Image
                   src={movie.image}
-                  alt={movie.alt}
-                  width={1098}
+                  alt=""
+                  width={1214}
                   height={1598}
+                  objectFit="center"
                 />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              </SwiperSlide>
+            );
+          })}
+        </SwiperComponent>
       </div>
     </>
   );

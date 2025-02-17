@@ -8,7 +8,7 @@ export default async function Category({
 }) {
   const category = (await params).category;
   return (
-    <HomePage className="pt-[80px]">
+    <HomePage>
       <ListFilmCategory category={category} />
     </HomePage>
   );

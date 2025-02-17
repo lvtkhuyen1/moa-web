@@ -15,11 +15,14 @@ export default function HeaderCard() {
   return (
     <div className="grid grid-cols-4 md:gap-2 py-0 md:py-4">
       {imageCard.map((image, index) => (
-        <div
-          key={index}
-          className="flex justify-center items-center aspect-[441/92] pb-1 md:pb-0"
-        >
-          <Image alt="" src={image} />
+        <div key={index} className="aspect-[441/92] pb-1 md:pb-0">
+          <Image
+            alt=""
+            src={image}
+            width={882}
+            height={184}
+            className="object-contain"
+          />
         </div>
       ))}
     </div>

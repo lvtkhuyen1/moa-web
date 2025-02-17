@@ -1,17 +1,18 @@
 "use client";
 import material from "@/assets/icons/material-movies.png";
 import icon_prev_all from "@/assets/icons/first-page.png";
-import icon_prev from "@/assets/icons/arrow-left.png";
+import icon_prev from "@/assets/icons/arow-left.png";
 import icon_next from "@/assets/icons/arrow-right.png";
 import icon_next_all from "@/assets/icons/last-page.png";
+import icon_play from "@/assets/icons/play-icon.png";
 import { limitMovies } from "@/constants";
-import { ICategory, IMovies } from "@/types";
+import { CategoryType, MovieType } from "@/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { SwiperSlide } from "swiper/react";
-import CommonSwiper from "../Swiper";
-const IMovieCard = ({ film }: { film: IMovies }) => {
+import SwiperComponent from "../Swiper";
+const MovieItem = ({ film }: { film: MovieType }) => {
   const router = useRouter();
 
   return (
@@ -19,20 +20,26 @@ const IMovieCard = ({ film }: { film: IMovies }) => {
       onClick={() =>
         router.push(`/${film.categories[0].name.replace("/", "-")}/${film.id}`)
       }
-      className="flex flex-col gap-2 font-medium text-white"
+      className="w-full h-full flex flex-col gap-2 font-medium text-white justify-between"
     >
-      <div className="relative group overflow-hidden cursor-pointer mb-2 rounded-lg">
-        <img
-          width={533}
-          height={300}
+      <div className="relative group overflow-hidden mb-2 flex-1 aspect-[2/3]">
+        <Image
+          fill
           src={film.image}
           alt=""
-          className="w-full h-[450px] object-cover transition-transform duration-300 group-hover:scale-110"
+          className="w-full object-cover cursor-pointer"
         />
-        
+        <div className="absolute inset-0 bg-[#06060699] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+          <div className="relative w-[53px] h-[53px]">
+            <Image src={icon_play} alt="icon" fill />
+          </div>
+        </div>
       </div>
 
-      <span className="text-2xl leading-7 font-medium">{film.title}</span>
+      <span className="text-xs md:text-base xl:text-xl font-medium break-words text-center overflow-hidden whitespace-nowrap text-ellipsis">
+        {film.title}
+      </span>
     </div>
   );
 };
@@ -69,8 +76,8 @@ export default function CategoryItem({
   setPagination,
 }: {
   title?: string;
-  categories?: ICategory;
-  listFilmCategories: IMovies[];
+  categories?: CategoryType;
+  listFilmCategories: MovieType[];
   slidesPerView?: number;
   isShowMore?: boolean;
   isSwiper?: boolean;
@@ -122,25 +129,44 @@ export default function CategoryItem({
       });
     }
   };
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, [pagination]);
+
+  const breakpoints = {
+    780: {
+      slidesPerView: 5.5,
+      spaceBetween: 10,
+    },
+    0: {
+      slidesPerView: 3.5,
+      spaceBetween: 5,
+    },
+  };
+  const totalPages = total ? Math.ceil(total / limitMovies) : 0;
+
+  const paginationSafe = pagination ?? { page: 1, limit: limitMovies };
+
+  const maxPagesToShow = 5;
+  let startPage = Math.max(
+    1,
+    paginationSafe.page - Math.floor(maxPagesToShow / 2)
+  );
+  const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+  if (endPage - startPage + 1 < maxPagesToShow) {
+    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+  }
   return (
     <>
-      <div className="cursor-pointer">
+      <>
         {title && (
-          <div className="flex justify-between mb-6 items-center">
-            <div className="flex gap-[10px] items-center">
+          <div className="flex justify-between mb-2 md:mb-6 items-center">
+            <div className="flex gap-1 md:gap-3 items-center">
               <Image
                 src={material}
                 alt="Material Movies"
                 width={32}
                 height={32}
               />
-              <span className="text-white font-semibold text-[32px] leading-[46px]">
+              <span className="text-white font-semibold text-base md:text-lg xl:text-3xl">
                 {title}
               </span>
             </div>
@@ -153,7 +179,7 @@ export default function CategoryItem({
                     }`
                   )
                 }
-                className="bg-[#FFBB00] rounded w-[67px] h-[29px]"
+                className="bg-[#FFBB00] rounded p-1 md:p-2 text-black font-bold text-xs md:text-base xl:text-2xl"
               >
                 +더보기
               </button>
@@ -162,36 +188,40 @@ export default function CategoryItem({
         )}
 
         {isSwiper ? (
-          <CommonSwiper gap={"16px"} slidesPerView={slidesPerView ?? 1}>
+          <SwiperComponent
+            gap={"16px"}
+            slidesPerView={slidesPerView ?? 1}
+            breakpoints={breakpoints}
+          >
             {listFilmCategories?.map((film, index) => {
               return (
                 <SwiperSlide key={index}>
-                  <IMovieCard film={film} />
+                  <MovieItem film={film} />
                 </SwiperSlide>
               );
             })}
-          </CommonSwiper>
+          </SwiperComponent>
         ) : (
-          <div className="grid lg:grid-cols-3 xl:grid-cols-5 sm:grid-cols-2 grid-cols-1 gap-4">
+          <div className="grid grid-cols-4 xl:grid-cols-5 gap-4">
             {listFilmCategories?.map((film, index) => {
-              return <IMovieCard key={index} film={film} />;
+              return <MovieItem key={index} film={film} />;
             })}
           </div>
         )}
-      </div>
+      </>
       {total &&
         Math.ceil(total / limitMovies) > 1 &&
         pagination &&
         setPagination && (
           <div className="flex gap-1 items-center justify-center mt-6">
             <ButtonPagination
-              disable={pagination.page === 1}
+              disable={paginationSafe.page === 1}
               className={`${
-                pagination.page === 1
+                paginationSafe.page === 1
                   ? "cursor-not-allowed bg-[#313131]"
                   : "cursor-pointer bg-[#313131]"
               }`}
-              onClick={() => handleChangePage(pagination.page, "prev-all")}
+              onClick={() => handleChangePage(paginationSafe.page, "prev-all")}
             >
               <Image
                 src={icon_prev_all}
@@ -200,62 +230,60 @@ export default function CategoryItem({
                 height={12}
               />
             </ButtonPagination>
+
             <ButtonPagination
-              disable={pagination.page === 1}
+              disable={paginationSafe.page === 1}
               className={`${
-                pagination.page === 1
+                paginationSafe.page === 1
                   ? "cursor-not-allowed bg-[#313131]"
                   : "cursor-pointer bg-[#313131]"
               }`}
-              onClick={() => handleChangePage(pagination.page, "prev")}
+              onClick={() => handleChangePage(paginationSafe.page, "prev")}
             >
               <Image src={icon_prev} alt="prev" width={9} height={9} />
             </ButtonPagination>
 
-            {Array.from({ length: Math.ceil(total / limitMovies) }).map(
-              (_, index) => (
+            {Array.from({ length: endPage - startPage + 1 }).map((_, index) => {
+              const page = startPage + index;
+              return (
                 <ButtonPagination
-                  onClick={() => handleChangePage(index + 1)}
+                  onClick={() => handleChangePage(page)}
                   className={`${
-                    index + 1 === pagination.page
+                    page === paginationSafe.page
                       ? "bg-[#FFBB00]"
                       : "bg-[#313131]"
                   }`}
-                  key={index}
+                  key={page}
                 >
-                  {index + 1}
+                  {page}
                 </ButtonPagination>
-              )
-            )}
+              );
+            })}
+
             <ButtonPagination
-              onClick={() => handleChangePage(pagination.page, "next")}
-              disable={pagination.page === Math.ceil(total / limitMovies)}
+              onClick={() => handleChangePage(paginationSafe.page, "next")}
+              disable={paginationSafe.page === totalPages}
               className={`${
-                pagination.page === Math.ceil(total / limitMovies)
+                paginationSafe.page === totalPages
                   ? "cursor-not-allowed bg-[#313131]"
                   : "cursor-pointer bg-[#313131]"
               }`}
             >
-              <Image
-                src={icon_next}
-                alt="next"
-                width={9}
-                height={9}
-                className="rotate-180"
-              />
+              <Image src={icon_next} alt="next" width={9} height={9} />
             </ButtonPagination>
+
             <ButtonPagination
-              disable={pagination.page === Math.ceil(total / limitMovies)}
+              disable={paginationSafe.page === totalPages}
               className={`${
-                pagination.page === Math.ceil(total / limitMovies)
+                paginationSafe.page === totalPages
                   ? "cursor-not-allowed bg-[#313131]"
                   : "cursor-pointer bg-[#313131]"
               }`}
-              onClick={() => handleChangePage(pagination.page, "next-all")}
+              onClick={() => handleChangePage(paginationSafe.page, "next-all")}
             >
               <Image
                 src={icon_next_all}
-                alt="prev-all"
+                alt="next-all"
                 width={12}
                 height={12}
               />

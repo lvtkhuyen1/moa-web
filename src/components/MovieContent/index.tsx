@@ -1,18 +1,18 @@
 "use client";
 
-import { limitRelatedMovies } from "@/constants";
 import { getMovieCategories } from "@/services/movies";
-import { IMovies } from "@/types";
+import { MovieType } from "@/types";
 import { useEffect, useState } from "react";
 import CategoryItem from "../CategoryItem";
+import { limitInformationMovies } from "@/constants";
 
-export default function RelatedFilm() {
+export default function MovieContent() {
   const [pagination] = useState({
     page: 1,
-    limit: limitRelatedMovies,
+    limit: limitInformationMovies,
   });
   const [listMovie, setListMovie] = useState<{
-    movies: IMovies[];
+    movies: MovieType[];
     total: number;
   }>({
     movies: [],

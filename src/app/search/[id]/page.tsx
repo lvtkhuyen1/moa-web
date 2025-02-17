@@ -1,5 +1,5 @@
 import HomePage from "@/components/HomePage";
-import SearchMovie from "@/components/SearchFilm";
+import SearchMovie from "@/components/SearchMovie";
 
 export default async function SearchFilm({
   params,
@@ -9,7 +9,7 @@ export default async function SearchFilm({
   const search = (await params).id;
 
   return (
-    <HomePage className="pt-[80px]">
+    <HomePage>
       <SearchMovie search={search} />
     </HomePage>
   );
