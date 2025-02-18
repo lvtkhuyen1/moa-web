@@ -23,8 +23,8 @@ const Category = ({ category }: { category: FooterCategory }) => {
       onClick={handleNavigate}
       className="flex flex-col gap-1 text-xl leading-6 font-normal justify-center items-center relative"
     >
-      <div className="relative w-5 h-5">
-        <Image src={category.image} alt={category.title} fill />
+      <div className="relative">
+        <Image src={category.image} alt={category.title} />
       </div>
       <span className="text-xs md:text-base">{category.title}</span>
     </div>
@@ -88,16 +88,17 @@ export default function Footer() {
   };
   return (
     <>
-      <div className="p-4 text-xs md:text-base lg:text-lg bg-black border border-[#505050] border-t-1 border-b-0 border-x-0 mt-4">
-        <Image src={Logo} alt="Logo" height={20} />
+      <div className="p-0 md:p-6 border-t border-[#505050] space-y-3 font-medium text-xs md:text-sm mb-16 md:mb-0 mt-8 md:mt-6 pt-2">
+        <Image src={Logo} alt="Logo" />
         <div className="gap-4 grid my-2">
           <span>MOA TV 다시보기 서비스 입니다</span>
           <span>
             MOA TV 링크 제공 사이트입니다. 이 웹 사이트에는 음악, 비디오,
             멀티미디어 파일을 저장하지 않습니다. 또한 이 사이트에서 제공되는
-            콘텐츠는 링크된 콘텐츠 이므로 저작권, 적법성, 정확성, 규정 준수 또는
-            기타 측면에 대해 TV888 책임이 없습니다. 저작권 등 법적 문제가 있는
-            경우 적절한 미디어 파일 소유자 또는 호스팅 업체에 문의하십시오.
+            콘텐츠는 링크된 콘텐츠 이므로 <br />
+            저작권, 적법성, 정확성, 규정 준수 또는 기타 측면에 대해 TV888 책임이
+            없습니다. 저작권 등 법적 문제가 있는 경우 적절한 미디어 파일 소유자
+            또는 호스팅 업체에 문의하십시오.
             <br />
             연락처: @telegram
           </span>
@@ -112,8 +113,8 @@ export default function Footer() {
           onClick={handleShowMore}
           className="flex flex-col gap-1 text-xl leading-6 font-normal justify-center items-center relative cursor-pointer"
         >
-          <div className="relative w-5 h-5">
-            <Image src={more} alt="show more" fill />
+          <div className="relative">
+            <Image src={more} alt="show more" />
           </div>
           <span className="text-xs md:text-base">기타</span>
         </div>

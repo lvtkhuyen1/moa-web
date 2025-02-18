@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import ListMovies from "../ListMovies";
 import CategoryItem from "../CategoryItem";
 
-export default function ListFilmCategory({ category }: { category: string }) {
+export default function ListCategory({ category }: { category: string }) {
   const [pagination, setPagination] = useState({
     page: 1,
     limit: limitMovies,
@@ -43,7 +43,7 @@ export default function ListFilmCategory({ category }: { category: string }) {
     <ListMovies mainTitle={listMovie.movies[0]?.categories[0].name}>
       <CategoryItem
         total={listMovie.total}
-        listFilmCategories={listMovie.movies}
+        categoryItems={listMovie.movies}
         title={listMovie.movies[0]?.categories[0].name}
         isSwiper={false}
         pagination={pagination}

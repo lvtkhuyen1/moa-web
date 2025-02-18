@@ -1,5 +1,5 @@
 import HomePage from "@/components/HomePage";
-import SearchMovie from "@/components/SearchMovie";
+import SearchMovie from "@/components/Movies/SearchMovie";
 
 export default async function SearchFilm({
   params,

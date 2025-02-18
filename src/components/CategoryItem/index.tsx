@@ -1,73 +1,22 @@
 "use client";
 import material from "@/assets/icons/material-movies.png";
-import icon_prev_all from "@/assets/icons/first-page.png";
-import icon_prev from "@/assets/icons/arow-left.png";
+import first_page from "@/assets/icons/first-page.png";
+import icon_prev from "@/assets/icons/arrow-left.png";
 import icon_next from "@/assets/icons/arrow-right.png";
-import icon_next_all from "@/assets/icons/last-page.png";
-import icon_play from "@/assets/icons/play-icon.png";
+import last_page from "@/assets/icons/last-page.png";
 import { limitMovies } from "@/constants";
 import { CategoryType, MovieType } from "@/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { SwiperSlide } from "swiper/react";
 import SwiperComponent from "../Swiper";
-const MovieItem = ({ film }: { film: MovieType }) => {
-  const router = useRouter();
-
-  return (
-    <div
-      onClick={() =>
-        router.push(`/${film.categories[0].name.replace("/", "-")}/${film.id}`)
-      }
-      className="w-full h-full flex flex-col gap-2 font-medium text-white justify-between"
-    >
-      <div className="relative group overflow-hidden mb-2 flex-1 aspect-[2/3]">
-        <Image
-          fill
-          src={film.image}
-          alt=""
-          className="w-full object-cover cursor-pointer"
-        />
-        <div className="absolute inset-0 bg-[#06060699] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-          <div className="relative w-[53px] h-[53px]">
-            <Image src={icon_play} alt="icon" fill />
-          </div>
-        </div>
-      </div>
-
-      <span className="text-xs md:text-base xl:text-xl font-medium break-words text-center overflow-hidden whitespace-nowrap text-ellipsis">
-        {film.title}
-      </span>
-    </div>
-  );
-};
-const ButtonPagination = ({
-  children,
-  className = "bg-[#313131]",
-  onClick,
-  disable = false,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  disable?: boolean;
-  onClick?: () => void;
-}) => {
-  return (
-    <button
-      disabled={disable}
-      onClick={onClick}
-      className={`w-6 h-6 text-white flex justify-center items-center rounded text-xs font-normal ${className}`}
-    >
-      {children}
-    </button>
-  );
-};
+import PaginationButton from "../Movies/PaginationButton";
+import MovieItem from "../Movies/MovieTiem";
 export default function CategoryItem({
   title,
   categories,
-  listFilmCategories,
+  categoryItems,
   slidesPerView,
   isShowMore = true,
   isSwiper = true,
@@ -77,7 +26,7 @@ export default function CategoryItem({
 }: {
   title?: string;
   categories?: CategoryType;
-  listFilmCategories: MovieType[];
+  categoryItems: MovieType[];
   slidesPerView?: number;
   isShowMore?: boolean;
   isSwiper?: boolean;
@@ -97,7 +46,7 @@ export default function CategoryItem({
   const router = useRouter();
   const handleChangePage = (page: number, type?: string) => {
     if (!setPagination) return;
-    else if (type === "prev-all") {
+    else if (type === "first-page") {
       setPagination({
         ...pagination,
         page: 1,
@@ -109,7 +58,7 @@ export default function CategoryItem({
         page: page - 1,
         limit: limitMovies,
       });
-    } else if (type === "next-all" && total) {
+    } else if (type === "last-page" && total) {
       setPagination({
         ...pagination,
         page: Math.ceil(total / limitMovies),
@@ -130,6 +79,12 @@ export default function CategoryItem({
     }
   };
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+    });
+  }, [pagination]);
+
   const breakpoints = {
     780: {
       slidesPerView: 5.5,
@@ -138,6 +93,7 @@ export default function CategoryItem({
     0: {
       slidesPerView: 3.5,
       spaceBetween: 5,
+      gap: "0px",
     },
   };
   const totalPages = total ? Math.ceil(total / limitMovies) : 0;
@@ -193,19 +149,17 @@ export default function CategoryItem({
             slidesPerView={slidesPerView ?? 1}
             breakpoints={breakpoints}
           >
-            {listFilmCategories?.map((film, index) => {
-              return (
-                <SwiperSlide key={index}>
-                  <MovieItem film={film} />
-                </SwiperSlide>
-              );
-            })}
+            {categoryItems?.map((film, index) => (
+              <SwiperSlide key={index}>
+                <MovieItem film={film} />
+              </SwiperSlide>
+            ))}
           </SwiperComponent>
         ) : (
-          <div className="grid grid-cols-4 xl:grid-cols-5 gap-4">
-            {listFilmCategories?.map((film, index) => {
-              return <MovieItem key={index} film={film} />;
-            })}
+          <div className="grid grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4">
+            {categoryItems?.map((film, index) => (
+              <MovieItem key={index} film={film} />
+            ))}
           </div>
         )}
       </>
@@ -214,24 +168,21 @@ export default function CategoryItem({
         pagination &&
         setPagination && (
           <div className="flex gap-1 items-center justify-center mt-6">
-            <ButtonPagination
+            <PaginationButton
               disable={paginationSafe.page === 1}
               className={`${
                 paginationSafe.page === 1
                   ? "cursor-not-allowed bg-[#313131]"
                   : "cursor-pointer bg-[#313131]"
               }`}
-              onClick={() => handleChangePage(paginationSafe.page, "prev-all")}
+              onClick={() =>
+                handleChangePage(paginationSafe.page, "first-page")
+              }
             >
-              <Image
-                src={icon_prev_all}
-                alt="prev-all"
-                width={12}
-                height={12}
-              />
-            </ButtonPagination>
+              <Image src={first_page} alt="first-page" width={12} height={12} />
+            </PaginationButton>
 
-            <ButtonPagination
+            <PaginationButton
               disable={paginationSafe.page === 1}
               className={`${
                 paginationSafe.page === 1
@@ -241,12 +192,12 @@ export default function CategoryItem({
               onClick={() => handleChangePage(paginationSafe.page, "prev")}
             >
               <Image src={icon_prev} alt="prev" width={9} height={9} />
-            </ButtonPagination>
+            </PaginationButton>
 
             {Array.from({ length: endPage - startPage + 1 }).map((_, index) => {
               const page = startPage + index;
               return (
-                <ButtonPagination
+                <PaginationButton
                   onClick={() => handleChangePage(page)}
                   className={`${
                     page === paginationSafe.page
@@ -256,11 +207,11 @@ export default function CategoryItem({
                   key={page}
                 >
                   {page}
-                </ButtonPagination>
+                </PaginationButton>
               );
             })}
 
-            <ButtonPagination
+            <PaginationButton
               onClick={() => handleChangePage(paginationSafe.page, "next")}
               disable={paginationSafe.page === totalPages}
               className={`${
@@ -270,24 +221,19 @@ export default function CategoryItem({
               }`}
             >
               <Image src={icon_next} alt="next" width={9} height={9} />
-            </ButtonPagination>
+            </PaginationButton>
 
-            <ButtonPagination
+            <PaginationButton
               disable={paginationSafe.page === totalPages}
               className={`${
                 paginationSafe.page === totalPages
                   ? "cursor-not-allowed bg-[#313131]"
                   : "cursor-pointer bg-[#313131]"
               }`}
-              onClick={() => handleChangePage(paginationSafe.page, "next-all")}
+              onClick={() => handleChangePage(paginationSafe.page, "last-page")}
             >
-              <Image
-                src={icon_next_all}
-                alt="next-all"
-                width={12}
-                height={12}
-              />
-            </ButtonPagination>
+              <Image src={last_page} alt="last-page" width={12} height={12} />
+            </PaginationButton>
           </div>
         )}
     </>

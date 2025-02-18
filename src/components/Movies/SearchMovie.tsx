@@ -46,7 +46,7 @@ export default function SearchMovie({ search }: { search: string }) {
       {listMovie?.movies?.length > 0 ? (
         <CategoryItem
           total={listMovie.total}
-          listFilmCategories={listMovie.movies}
+          categoryItems={listMovie.movies}
           isSwiper={false}
           pagination={pagination}
           setPagination={setPagination}

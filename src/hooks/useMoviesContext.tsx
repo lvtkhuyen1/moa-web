@@ -38,7 +38,6 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
     const fetchCategories = async () => {
       try {
         const res: FetchCategoriesResponse = await handleFetchCategories();
-        console.log(res);
         if (res) {
           const homeCategory = { cate_id: 0, id: 0, name: "Home" };
 

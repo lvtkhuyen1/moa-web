@@ -41,7 +41,7 @@ export default function MovieContent() {
         slidesPerView={5.2}
         isShowMore
         categories={listMovie.movies[0]?.categories[0]}
-        listFilmCategories={listMovie.movies}
+        categoryItems={listMovie.movies}
         title={listMovie.movies[0]?.categories[0].name}
       />
     </>

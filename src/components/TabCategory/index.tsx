@@ -29,7 +29,7 @@ export default function TabCategory() {
   }, [param]);
 
   return (
-    <div className="hidden md:flex flex-row gap-8 py-4">
+    <div className="hidden md:flex flex-row gap-6 py-4">
       {[{ name: "Home", id: 0 }, ...categories]?.map((category) => (
         <div
           onClick={() => {
@@ -46,7 +46,7 @@ export default function TabCategory() {
               Number(categoryActive) === category.id
                 ? "text-[#FFBB00]"
                 : "text-white"
-            } font-bold`}
+            } font-bold text-base`}
           >
             {category.name}
           </p>

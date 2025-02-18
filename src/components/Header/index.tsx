@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import search from "@/assets/icons/search-icon.png";
 import logo from "@/assets/logo/logo.png";
 import { useParams, useRouter } from "next/navigation";
+import { getMovieCategories } from "@/services/movies";
+import { MovieType } from "@/types";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 export default function Header() {
   const param = useParams();
@@ -12,6 +15,16 @@ export default function Header() {
     Array.isArray(param.id) ? param.id[0] : param.id || ""
   );
   const router = useRouter();
+
+  const [suggestions, setSuggestions] = useState<MovieType[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [shouldFetch, setShouldFetch] = useState(true);
+  const [hasClicked, setHasClicked] = useState(false);
+
+  const ref = useClickOutside<HTMLDivElement>(() => {
+    setSuggestions([]);
+    setValue("");
+  });
   const handleSearch = (value: string) => {
     if (!value) {
       router.push("/");
@@ -19,6 +32,42 @@ export default function Header() {
     }
     router.push(`/search/${decodeURIComponent(value as string)}`);
   };
+
+  const fetchSuggestions = async (searchValue: string) => {
+    if (!shouldFetch) return;
+    setIsFetching(true);
+    try {
+      const movieSuggestions = await getMovieCategories({
+        search: searchValue,
+        page: 1,
+        limit: 5,
+      });
+      const movies = movieSuggestions?.data?.movies || [];
+
+      setSuggestions(movies);
+    } catch (error) {
+      console.log("Error fetching suggestions:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    if (value) {
+      fetchSuggestions(value);
+    } else {
+      setSuggestions([]);
+    }
+  }, [value]);
+
+  const handleSelectSuggestion = (movieTitle: string) => {
+    setValue(movieTitle);
+    setShouldFetch(false);
+    router.push(`/search/${movieTitle}`);
+    setSuggestions([]);
+    setHasClicked(true);
+  };
+
   return (
     <div className="w-full flex justify-between gap-2 py-4">
       <div
@@ -30,31 +79,70 @@ export default function Header() {
         <Image src={logo} alt="logo" width={141} height={50} />
       </div>
       <div className="w-full flex gap-3 justify-end items-center mx-3">
-        <input
-          value={decodeURIComponent(value as string)}
-          onChange={(e) => {
-            if (e.target.value === "") {
-              router.push("/");
-            }
-            setValue(e.target.value);
-          }}
-          type="text"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearch(value);
-            }
-          }}
-          className="w-full md:w-[270px] rounded-full bg-[#323232] text-center py-0 md:py-1"
-        />
-        {value && (
-          <div
-            onClick={() => {
-              setValue("");
-              router.push("/");
+        <div className="relative w-full md:w-[270px] flex flex-col " ref={ref}>
+          <input
+            value={decodeURIComponent(value)}
+            onChange={(e) => {
+              if (e.target.value === "") {
+                router.push("/");
+              }
+              setValue(e.target.value);
+              setShouldFetch(true);
             }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
-          ></div>
-        )}
+            type="text"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch(value);
+              }
+            }}
+            className="rounded-full bg-[#323232] py-0 h-[30px] md:h-[37px] px-4"
+          />
+          {value &&
+            Array.isArray(suggestions) &&
+            suggestions.length > 0 &&
+            !isFetching && (
+              <div className="absolute w-full md:w-[270px] bg-[#323232] rounded-lg shadow-lg z-50 top-[30px] md:top-[37px]">
+                {suggestions.map((movie) => (
+                  <div
+                    key={movie.id}
+                    className="flex items-center gap-4 px-4 py-2 text-white cursor-pointer hover:bg-[#444] hover:rounded"
+                    onClick={() => handleSelectSuggestion(movie.title)}
+                  >
+                    {movie.image && (
+                      <Image
+                        src={`${movie.image}`}
+                        alt={movie.title}
+                        width={40}
+                        height={60}
+                        className="rounded"
+                      />
+                    )}
+                    <div className="flex flex-col gap-2 w-full">
+                      <span className="w-2/3 block font-semibold overflow-ellipsis overflow-hidden whitespace-nowrap">
+                        {movie.title}
+                      </span>
+
+                      {movie.categories && movie.categories.length > 0 && (
+                        <span className="text-sm text-gray-400">
+                          {movie.categories.map((categorie, index) => (
+                            <span key={categorie.id}>
+                              {categorie.name}
+                              {index < movie.categories.length - 1 && ", "}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          {value && !isFetching && suggestions.length === 0 && !hasClicked && (
+            <div className="absolute w-full md:w-[270px] bg-[#323232] rounded-lg shadow-lg z-50 top-[30px] md:top-[37px]">
+              <div className="px-4 py-2 text-white">No search result</div>
+            </div>
+          )}
+        </div>
         <div
           onClick={() => {
             handleSearch(value);

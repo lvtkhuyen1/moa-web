@@ -1,7 +1,7 @@
 "use client";
 
 // import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,14 +9,10 @@ import HeaderCard from "@/components/HeaderCard";
 import { MovieProvider } from "@/hooks/useMoviesContext";
 import TabCategory from "@/components/TabCategory";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const notoSansKR = Noto_Sans_KR({
+  weight: ["100", "100", "300", "400", "500", "700", "900"],
+  subsets: ["latin-ext"],
+  variable: "--font-noto-sans-kr",
 });
 
 // export const metadata: Metadata = {
@@ -31,11 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${notoSansKR.variable} noto-sans-kr-font`}>
         <MovieProvider>
-          <div className="bg-black min-h-screen text-white p-5">
+          <div className="bg-black min-h-screen text-white p-2 md:p-5">
             <Header />
             <TabCategory />
             <HeaderCard />

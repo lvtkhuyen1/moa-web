@@ -17,8 +17,6 @@ export default function Category() {
     const fetchMovies = async () => {
       try {
         const movies = await getMovies([1, 2, 3, 4, 5, 6, 7]);
-        console.log("Movies fetched:", movies);
-
         setListMovieByCategory(
           movies.reduce((acc: MoviesByCategory, item: MovieType) => {
             if (!acc[item.cate_id]) {
@@ -46,7 +44,7 @@ export default function Category() {
                   slidesPerView={5.2}
                   categories={movies[0].categories[0]}
                   title={movies[0].categories[0].name}
-                  listFilmCategories={movies as MovieType[]}
+                  categoryItems={movies as MovieType[]}
                 />
               </div>
             );

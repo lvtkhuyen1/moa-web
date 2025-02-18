@@ -70,7 +70,7 @@ export default function DetailMovie({ movie }: { movie: string }) {
           <div className="mb-5">
             <MoviePlayer movieUrl={video_url!} />
           </div>
-          <div className="my-0 md:my-1 bg-[#4A4A4A] rounded px-1 md:px-4 py-6 flex gap-1 md:gap-3 flex-wrap items-center">
+          <div className="my-0 md:my-1 bg-[#4A4A4A] rounded px-4 py-6 flex gap-1 md:gap-3 flex-wrap items-center">
             <span className="text-xs md:text-base">서버 : </span>
             {detailMovie?.episodes
               .sort((a, b) => a.ep_no - b.ep_no)

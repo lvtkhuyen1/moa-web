@@ -1,5 +1,5 @@
 import HomePage from "@/components/HomePage";
-import ListFilmCategory from "@/components/ListFilmCategory";
+import ListCategory from "@/components/ListCategory";
 
 export default async function Category({
   params,
@@ -9,7 +9,7 @@ export default async function Category({
   const category = (await params).category;
   return (
     <HomePage>
-      <ListFilmCategory category={category} />
+      <ListCategory category={category} />
     </HomePage>
   );
 }
