@@ -41,7 +41,7 @@ export default function Category() {
             return (
               <div key={key} className="relative">
                 <CategoryItem
-                  slidesPerView={5.2}
+                  slidesPerView={5.5}
                   categories={movies[0].categories[0]}
                   title={movies[0].categories[0].name}
                   categoryItems={movies as MovieType[]}

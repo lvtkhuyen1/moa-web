@@ -19,11 +19,13 @@ export default function ListCategory({ category }: { category: string }) {
     movies: [],
     total: 0,
   });
+  const [loading, setLoading] = useState(true);
 
   const categoryId = category.split("-").pop();
   useEffect(() => {
     const fetchMovies = async () => {
       try {
+        setLoading(true);
         const movie = await getMovieCategories({
           categoryId: Number(categoryId),
           ...pagination,
@@ -32,6 +34,7 @@ export default function ListCategory({ category }: { category: string }) {
           movies: movie.data.movies,
           total: movie.data.total,
         });
+        setLoading(false);
       } catch (error) {
         console.log("error", error);
       }
@@ -41,14 +44,18 @@ export default function ListCategory({ category }: { category: string }) {
 
   return (
     <ListMovies mainTitle={listMovie.movies[0]?.categories[0].name}>
-      <CategoryItem
-        total={listMovie.total}
-        categoryItems={listMovie.movies}
-        title={listMovie.movies[0]?.categories[0].name}
-        isSwiper={false}
-        pagination={pagination}
-        setPagination={setPagination}
-      />
+      {loading ? (
+        ""
+      ) : (
+        <CategoryItem
+          total={listMovie.total}
+          categoryItems={listMovie.movies}
+          title={listMovie.movies[0]?.categories[0].name}
+          isSwiper={false}
+          pagination={pagination}
+          setPagination={setPagination}
+        />
+      )}
     </ListMovies>
   );
 }

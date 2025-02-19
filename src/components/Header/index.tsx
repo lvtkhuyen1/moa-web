@@ -11,19 +11,29 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 
 export default function Header() {
   const param = useParams();
-  const [value, setValue] = useState(
-    Array.isArray(param.id) ? param.id[0] : param.id || ""
-  );
   const router = useRouter();
 
   const [suggestions, setSuggestions] = useState<MovieType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(true);
   const [hasClicked, setHasClicked] = useState(false);
+  console.log(hasClicked);
+
+  const [pagination, setPagination] = useState({
+    limit: 10,
+    page: 1,
+    search: Array.isArray(param.id) ? param.id[0] : param.id || "",
+    totalPages: 0,
+  });
 
   const ref = useClickOutside<HTMLDivElement>(() => {
     setSuggestions([]);
-    setValue("");
+    setPagination({
+      limit: 10,
+      page: 1,
+      search: "",
+      totalPages: 0,
+    });
   });
   const handleSearch = (value: string) => {
     if (!value) {
@@ -33,18 +43,16 @@ export default function Header() {
     router.push(`/search/${decodeURIComponent(value as string)}`);
   };
 
-  const fetchSuggestions = async (searchValue: string) => {
+  const fetchSuggestions = async (searchValue: string, page: number) => {
     if (!shouldFetch) return;
     setIsFetching(true);
     try {
       const movieSuggestions = await getMovieCategories({
         search: searchValue,
-        page: 1,
-        limit: 5,
+        page,
       });
       const movies = movieSuggestions?.data?.movies || [];
-
-      setSuggestions(movies);
+      setSuggestions((prevSuggestions) => [...prevSuggestions, ...movies]);
     } catch (error) {
       console.log("Error fetching suggestions:", error);
     } finally {
@@ -53,21 +61,44 @@ export default function Header() {
   };
 
   useEffect(() => {
-    if (value) {
-      fetchSuggestions(value);
+    if (pagination.search) {
+      setSuggestions([]);
+      fetchSuggestions(pagination.search, 1);
     } else {
       setSuggestions([]);
     }
-  }, [value]);
+  }, [pagination]);
 
   const handleSelectSuggestion = (movieTitle: string) => {
-    setValue(movieTitle);
+    setPagination((prev) => ({
+      ...prev,
+      search: movieTitle,
+    }));
     setShouldFetch(false);
     router.push(`/search/${movieTitle}`);
     setSuggestions([]);
     setHasClicked(true);
   };
 
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const bottom =
+      e.currentTarget.scrollHeight ===
+      e.currentTarget.scrollTop + e.currentTarget.clientHeight;
+    if (bottom && !isFetching && pagination.page < pagination.totalPages) {
+      setPagination((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    if (pagination.page > 1 && pagination.search) {
+      fetchSuggestions(pagination.search, pagination.page);
+    } else {
+      setSuggestions([]);
+    }
+  }, [pagination.page]);
   return (
     <div className="w-full flex justify-between gap-2 py-4">
       <div
@@ -81,30 +112,38 @@ export default function Header() {
       <div className="w-full flex gap-3 justify-end items-center mx-3">
         <div className="relative w-full md:w-[270px] flex flex-col " ref={ref}>
           <input
-            value={decodeURIComponent(value)}
+            value={decodeURIComponent(pagination.search)}
             onChange={(e) => {
-              if (e.target.value === "") {
+              const newValue = e.target.value;
+              if (newValue === "") {
                 router.push("/");
               }
-              setValue(e.target.value);
+              setPagination((prev) => ({
+                ...prev,
+                search: newValue,
+                page: 1,
+              }));
               setShouldFetch(true);
             }}
             type="text"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleSearch(value);
+                handleSearch(pagination.search);
               }
             }}
             className="rounded-full bg-[#323232] py-0 h-[30px] md:h-[37px] px-4"
           />
-          {value &&
+          {pagination.search &&
             Array.isArray(suggestions) &&
             suggestions.length > 0 &&
             !isFetching && (
-              <div className="absolute w-full md:w-[270px] bg-[#323232] rounded-lg shadow-lg z-50 top-[30px] md:top-[37px]">
-                {suggestions.map((movie) => (
+              <div
+                className="absolute w-full md:w-[270px] bg-[#323232] rounded-lg shadow-lg z-50 top-[30px] md:top-[37px] max-h-[500px] overflow-y-auto"
+                onScroll={handleScroll}
+              >
+                {suggestions.map((movie, index) => (
                   <div
-                    key={movie.id}
+                    key={`${movie.id}-${index}`}
                     className="flex items-center gap-4 px-4 py-2 text-white cursor-pointer hover:bg-[#444] hover:rounded"
                     onClick={() => handleSelectSuggestion(movie.title)}
                   >
@@ -117,8 +156,8 @@ export default function Header() {
                         className="rounded"
                       />
                     )}
-                    <div className="flex flex-col gap-2 w-full">
-                      <span className="w-2/3 block font-semibold overflow-ellipsis overflow-hidden whitespace-nowrap">
+                    <div className="flex flex-col gap-2 w-[80%]">
+                      <span className="block font-semibold overflow-ellipsis overflow-hidden whitespace-nowrap">
                         {movie.title}
                       </span>
 
@@ -137,15 +176,10 @@ export default function Header() {
                 ))}
               </div>
             )}
-          {value && !isFetching && suggestions.length === 0 && !hasClicked && (
-            <div className="absolute w-full md:w-[270px] bg-[#323232] rounded-lg shadow-lg z-50 top-[30px] md:top-[37px]">
-              <div className="px-4 py-2 text-white">No search result</div>
-            </div>
-          )}
         </div>
         <div
           onClick={() => {
-            handleSearch(value);
+            handleSearch(pagination.search);
           }}
           className="object-cover w-5 h-5 cursor-pointer"
         >

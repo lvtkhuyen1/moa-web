@@ -38,7 +38,7 @@ export default function MovieContent() {
   return (
     <>
       <CategoryItem
-        slidesPerView={5.2}
+        slidesPerView={5.5}
         isShowMore
         categories={listMovie.movies[0]?.categories[0]}
         categoryItems={listMovie.movies}

@@ -33,13 +33,7 @@ const MoviePlayer = ({ movieUrl }: { movieUrl: string }) => {
     <>
       <div className="w-full ">
         <div data-vjs-player>
-          <video
-            ref={videoRef}
-            controls
-            // autoPlay
-            // 2024-10-02 jun
-            style={{ width: "100%" }}
-          />
+          <video ref={videoRef} controls style={{ width: "100%" }} />
         </div>
       </div>
     </>
