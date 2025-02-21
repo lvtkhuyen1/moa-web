@@ -6,30 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import InformationMovie from "../MovieInformation";
 import MoviePlayer from "../MoviePlayer";
-import ListMovies from "../ListMovies";
 import MovieContent from "../MovieContent";
-const ButtonSelectFilm = ({
-  number_ep,
-  isActive,
-  handleSelectEpisode,
-  episode,
-}: {
-  number_ep: string;
-  isActive?: boolean;
-  handleSelectEpisode?: (episode: EpisodeType) => void;
-  episode: EpisodeType;
-}) => {
-  return (
-    <button
-      onClick={() => handleSelectEpisode && handleSelectEpisode(episode)}
-      className={`text-xs md:text-base rounded px-1 md:px-6 py-1 md:py-2 ${
-        isActive ? "bg-[#FFBB00] text-black" : "bg-[#202020] text-white"
-      }`}
-    >
-      {number_ep}
-    </button>
-  );
-};
+import EpisodeButton from "../Movies/EpisodeButton";
+
 export default function DetailMovie({ movie }: { movie: string }) {
   const number_ep = useSearchParams().get("number_ep");
   const [detailMovie, setDetailMovie] = useState<MovieType | null>(null);
@@ -66,7 +45,7 @@ export default function DetailMovie({ movie }: { movie: string }) {
   return (
     <>
       {detailMovie ? (
-        <ListMovies mainTitle={detailMovie?.title ?? ""}>
+        <>
           <div className="mb-5">
             <MoviePlayer movieUrl={video_url!} />
           </div>
@@ -75,7 +54,7 @@ export default function DetailMovie({ movie }: { movie: string }) {
             {detailMovie?.episodes
               .sort((a, b) => a.ep_no - b.ep_no)
               .map((ep) => (
-                <ButtonSelectFilm
+                <EpisodeButton
                   episode={ep}
                   handleSelectEpisode={() => handleSelectEpisode(ep)}
                   key={ep.ep_no}
@@ -89,13 +68,9 @@ export default function DetailMovie({ movie }: { movie: string }) {
               ))
               .reverse()}
           </div>
-          <div className="my-1">
-            <InformationMovie profile={detailMovie} />
-          </div>
-          <div className="my-4">
-            <MovieContent />
-          </div>
-        </ListMovies>
+          <InformationMovie profile={detailMovie} />
+          <MovieContent />
+        </>
       ) : null}
     </>
   );

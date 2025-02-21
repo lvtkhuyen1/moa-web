@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${notoSansKR.variable} noto-sans-kr-font`}>
         <MovieProvider>
-          <div className="bg-black min-h-screen text-white p-2 md:p-5">
+          <div className="min-h-screen bg-[#000000] p-2 md:p-5">
             <Header />
             <TabCategory />
             <HeaderCard />

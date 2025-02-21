@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function InformationMovie({ profile }: { profile: MovieType }) {
   return (
-    <div className="my-1 bg-[#4A4A4A] rounded px-4 py-6 flex flex-col md:flex-row gap-[70px] md:gap-5 xl:gap-[90px]">
+    <div className="my-1 bg-[#4A4A4A] rounded px-4 py-6 flex flex-col md:flex-row gap-[50px] md:gap-5 xl:gap-[90px]">
       <div className="relative max-w-[237px] w-full aspect-[237/340]">
         <Image
           src={profile?.image ?? ""}

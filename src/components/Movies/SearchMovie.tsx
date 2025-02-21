@@ -4,7 +4,6 @@ import { limitMovies } from "@/constants";
 import { getMovieCategories } from "@/services/movies";
 import { MovieType } from "@/types";
 import { useEffect, useState } from "react";
-import ListMovies from "../ListMovies";
 import CategoryItem from "../CategoryItem";
 
 export default function SearchMovie({ search }: { search: string }) {
@@ -42,7 +41,7 @@ export default function SearchMovie({ search }: { search: string }) {
   }, [pagination, search]);
 
   return (
-    <ListMovies mainTitle={decodeURIComponent(search)}>
+    <>
       {listMovie?.movies?.length > 0 ? (
         <CategoryItem
           total={listMovie.total}
@@ -56,6 +55,6 @@ export default function SearchMovie({ search }: { search: string }) {
           search
         )}`}</div>
       )}
-    </ListMovies>
+    </>
   );
 }

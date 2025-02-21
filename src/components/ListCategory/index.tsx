@@ -4,7 +4,6 @@ import { limitMovies } from "@/constants";
 import { getMovieCategories } from "@/services/movies";
 import { MovieType } from "@/types";
 import { useEffect, useState } from "react";
-import ListMovies from "../ListMovies";
 import CategoryItem from "../CategoryItem";
 
 export default function ListCategory({ category }: { category: string }) {
@@ -43,7 +42,7 @@ export default function ListCategory({ category }: { category: string }) {
   }, [pagination, categoryId]);
 
   return (
-    <ListMovies mainTitle={listMovie.movies[0]?.categories[0].name}>
+    <>
       {loading ? (
         ""
       ) : (
@@ -56,6 +55,6 @@ export default function ListCategory({ category }: { category: string }) {
           setPagination={setPagination}
         />
       )}
-    </ListMovies>
+    </>
   );
 }

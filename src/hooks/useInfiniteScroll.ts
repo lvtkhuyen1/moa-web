@@ -1,71 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-interface UseInfiniteScrollProps {
-  fetchData: () => Promise<void>;
-}
+type CallbackFunction = (done: () => void) => void;
 
-function useInfiniteScroll({ fetchData }: UseInfiniteScrollProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  console.log(setHasMore);
+const useInfiniteScroll = (
+  callback: CallbackFunction,
+  canFetchMore: boolean,
+  threshold: number = 100
+): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+
+  const handleScroll = useCallback(() => {
+    const element = document.getElementById("suggestions-container");
+
+    if (!element || !canFetchMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = element;
+
+    if (scrollHeight - scrollTop <= clientHeight + threshold && !isFetching) {
+      setIsFetching(true);
+    }
+  }, [isFetching, canFetchMore, threshold]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop ===
-          document.documentElement.offsetHeight &&
-        !isLoading &&
-        hasMore
-      ) {
-        setIsLoading(true);
-        fetchData().finally(() => setIsLoading(false));
+    const element = document.getElementById("suggestions-container");
+    if (element) {
+      element.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (element) {
+        element.removeEventListener("scroll", handleScroll);
       }
     };
+  }, [handleScroll]);
 
-    window.addEventListener("scroll", handleScroll);
+  useEffect(() => {
+    if (!isFetching) return;
+    callback(() => setIsFetching(false));
+  }, [isFetching, callback]);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [fetchData, isLoading, hasMore]);
-
-  return { isLoading, hasMore };
-}
+  return [isFetching, setIsFetching];
+};
 
 export default useInfiniteScroll;
-
-// import { useState, useEffect } from "react";
-
-// type UseInfiniteScrollProps = {
-//   callback: () => void;
-//   hasMore: boolean;
-// };
-
-// const useInfiniteScroll = ({
-//   callback,
-//   hasMore,
-// }: UseInfiniteScrollProps): boolean => {
-//   const [loading, setLoading] = useState<boolean>(false);
-
-//   const handleScroll = () => {
-//     const scrollHeight = document.documentElement.scrollHeight;
-//     const scrollTop = document.documentElement.scrollTop;
-//     const clientHeight = document.documentElement.clientHeight;
-
-//     if (scrollTop + clientHeight >= scrollHeight - 5 && !loading && hasMore) {
-//       setLoading(true);
-//       callback();
-//     }
-//   };
-
-//   useEffect(() => {
-//     window.addEventListener("scroll", handleScroll);
-//     return () => {
-//       window.removeEventListener("scroll", handleScroll);
-//     };
-//   }, [loading, hasMore]);
-
-//   return loading;
-// };
-
-// export default useInfiniteScroll;

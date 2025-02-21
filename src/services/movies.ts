@@ -35,6 +35,8 @@ export const getMovieCategories = async ({
       params.append("categoryId", String(categoryId));
     }
     const res = await fetchData(`/movies/?${params.toString()}`);
+    console.log(res);
+
     return res;
   } catch (error) {
     throw error;

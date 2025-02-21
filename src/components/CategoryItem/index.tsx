@@ -114,7 +114,7 @@ export default function CategoryItem({
     <>
       <>
         {title && (
-          <div className="flex justify-between mb-2 md:mb-6 items-center">
+          <div className="flex justify-between mb-2 md:mb-6 md:mt-4 items-center">
             <div className="flex gap-1 md:gap-3 items-center">
               <Image
                 src={material}
